@@ -89,7 +89,7 @@ class _SettingsTile extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     color: DesignTokens.primaryText,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 const SizedBox(height: 4),
