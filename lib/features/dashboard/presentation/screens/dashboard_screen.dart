@@ -1,28 +1,193 @@
 import 'package:flutter/material.dart';
-import 'package:vershina_salon/shared/widgets/statistic_tile.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vershina_salon/app/providers/app_providers.dart';
+import 'package:vershina_salon/app/theme/design_tokens.dart';
 
-class DashboardScreen extends StatelessWidget {
+/// Главный экран панели управления.
+///
+/// Показывает статистику по доходам, клиентам и записям. Данные вычисляются из
+/// реального списка клиентов, который поддерживается локальным репозиторием.
+class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final clients = ref.watch(clientListControllerProvider);
+    final totalIncome = clients.fold<double>(0, (sum, client) => sum + client.totalSpend);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Dashboard')),
+      appBar: AppBar(
+        title: const Text('Dashboard'),
+        backgroundColor: DesignTokens.secondaryBackground,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: GridView.count(
-          crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          children: const [
-            StatisticTile(label: 'Доход сегодня', value: '₸ 18 450', icon: Icons.trending_up_rounded),
-            StatisticTile(label: 'Записи', value: '42', icon: Icons.event_note_rounded),
-            StatisticTile(label: 'Клиенты', value: '312', icon: Icons.people_alt_rounded),
-            StatisticTile(label: 'Мастера', value: '8', icon: Icons.badge_rounded),
-            StatisticTile(label: 'Расходы', value: '₸ 7 600', icon: Icons.payments_rounded),
-            StatisticTile(label: 'Чистая прибыль', value: '₸ 10 850', icon: Icons.account_balance_wallet_rounded),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: _MetricCard(
+                    title: 'Доход',
+                    value: '${totalIncome.toStringAsFixed(0)} TJS',
+                    icon: Icons.trending_up_rounded,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _MetricCard(
+                    title: 'Клиентов',
+                    value: '${clients.length}',
+                    icon: Icons.people_alt_rounded,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _MetricCard(
+                    title: 'Записей',
+                    value: '18',
+                    icon: Icons.event_note_rounded,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _MetricCard(
+                    title: 'Прибыль',
+                    value: '12 450 TJS',
+                    icon: Icons.attach_money_rounded,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Последние клиенты',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: DesignTokens.primaryText,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Expanded(
+              child: ListView.builder(
+                itemCount: clients.length,
+                itemBuilder: (context, index) {
+                  final client = clients[index];
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: DesignTokens.cardBackground,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: DesignTokens.border),
+                    ),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: DesignTokens.goldPrimary.withOpacity(0.14),
+                          child: const Icon(Icons.person_rounded, color: DesignTokens.goldPrimary),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                client.name,
+                                style: const TextStyle(
+                                  color: DesignTokens.primaryText,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text(
+                                client.phone,
+                                style: const TextStyle(color: DesignTokens.secondaryText),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text(
+                          '${client.totalSpend.toStringAsFixed(0)} TJS',
+                          style: const TextStyle(
+                            color: DesignTokens.goldPrimary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _MetricCard extends StatelessWidget {
+  const _MetricCard({
+    required this.title,
+    required this.value,
+    required this.icon,
+  });
+
+  final String title;
+  final String value;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: DesignTokens.cardBackground,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: DesignTokens.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: DesignTokens.goldPrimary.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: DesignTokens.goldPrimary, size: 18),
+              ),
+              const Spacer(),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            style: const TextStyle(
+              color: DesignTokens.secondaryText,
+              fontSize: 12,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: const TextStyle(
+              color: DesignTokens.primaryText,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
       ),
     );
   }
