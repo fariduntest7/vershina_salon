@@ -28,6 +28,64 @@ class FinanceScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: DesignTokens.cardBackground,
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: DesignTokens.border),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 16,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Баланс',
+                          style: TextStyle(
+                            color: DesignTokens.secondaryText,
+                            fontSize: 12,
+                            letterSpacing: 0.4,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '${balance.toStringAsFixed(0)} TJS',
+                          style: const TextStyle(
+                            color: DesignTokens.primaryText,
+                            fontSize: 26,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: DesignTokens.goldPrimary.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(
+                      Icons.account_balance_wallet_rounded,
+                      color: DesignTokens.goldPrimary,
+                      size: 26,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
@@ -47,13 +105,6 @@ class FinanceScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            _SummaryCard(
-              title: 'Баланс',
-              value: '${balance.toStringAsFixed(0)} TJS',
-              color: DesignTokens.goldPrimary,
-              fullWidth: true,
-            ),
             const SizedBox(height: 20),
             Align(
               alignment: Alignment.centerLeft,
@@ -61,7 +112,7 @@ class FinanceScreen extends ConsumerWidget {
                 'История',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: DesignTokens.primaryText,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
@@ -73,11 +124,14 @@ class FinanceScreen extends ConsumerWidget {
                 itemBuilder: (context, index) {
                   final entry = entries[index];
                   final sign = entry.type == 'income' ? '+' : '-';
+                  final isIncome = entry.type == 'income';
+                  final accent = isIncome ? DesignTokens.success : DesignTokens.error;
+
                   return Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       color: DesignTokens.cardBackground,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(18),
                       border: Border.all(color: DesignTokens.border),
                     ),
                     child: Row(
@@ -86,18 +140,12 @@ class FinanceScreen extends ConsumerWidget {
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: entry.type == 'income'
-                                ? DesignTokens.success.withOpacity(0.14)
-                                : DesignTokens.error.withOpacity(0.14),
+                            color: accent.withOpacity(0.12),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Icon(
-                            entry.type == 'income'
-                                ? Icons.arrow_downward_rounded
-                                : Icons.arrow_upward_rounded,
-                            color: entry.type == 'income'
-                                ? DesignTokens.success
-                                : DesignTokens.error,
+                            isIncome ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
+                            color: accent,
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -109,7 +157,7 @@ class FinanceScreen extends ConsumerWidget {
                                 entry.title,
                                 style: const TextStyle(
                                   color: DesignTokens.primaryText,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -126,9 +174,7 @@ class FinanceScreen extends ConsumerWidget {
                         Text(
                           '$sign${entry.amount.toStringAsFixed(0)} TJS',
                           style: TextStyle(
-                            color: entry.type == 'income'
-                                ? DesignTokens.success
-                                : DesignTokens.error,
+                            color: accent,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -162,18 +208,15 @@ class _SummaryCard extends StatelessWidget {
     required this.title,
     required this.value,
     required this.color,
-    this.fullWidth = false,
   });
 
   final String title;
   final String value;
   final Color color;
-  final bool fullWidth;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: fullWidth ? double.infinity : null,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: DesignTokens.cardBackground,
