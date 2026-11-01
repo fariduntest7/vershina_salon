@@ -1,42 +1,68 @@
-/// Локальный источник данных клиентов.
+import 'package:vershina_salon/features/clients/domain/entities/client.dart';
+
+/// Реализация локального хранилища приложения.
 ///
-/// В текущей версии он представляет собой in-memory реализацию.
-/// Позже он будет заменён на SQLite/IndexedDB через реализацию репозитория.
-class ClientLocalDataSource {
-  ClientLocalDataSource();
+/// Данный сервис хранит данные в памяти без сетевого доступа. Это позволяет
+/// приложению работать офлайн и использовать один и тот же интерфейс данных
+/// как для мобильных платформ, так и для Web. В дальнейшем этот класс будет
+/// заменён на реализацию Drift/SQLite для native и IndexedDB для Web.
+class AppDatabase {
+  AppDatabase() : _clients = <Client>[
+        Client(
+          id: 'seed-client-1',
+          name: 'Анна Петрова',
+          phone: '+992900000001',
+          email: 'anna@example.com',
+          totalSpend: 18500,
+          lastVisitAt: DateTime.now().subtract(const Duration(days: 2)),
+          createdAt: DateTime.now().subtract(const Duration(days: 30)),
+          birthDate: DateTime(1992, 5, 11),
+          notes: 'Предпочитает безупречный уход и регулярные записи.',
+        ),
+        Client(
+          id: 'seed-client-2',
+          name: 'Рустам Сардаров',
+          phone: '+992900000002',
+          email: 'rustam@example.com',
+          totalSpend: 9300,
+          lastVisitAt: DateTime.now().subtract(const Duration(days: 5)),
+          createdAt: DateTime.now().subtract(const Duration(days: 18)),
+          birthDate: DateTime(1988, 9, 21),
+          notes: 'Часто выбирает услуги стрижки и уход за бородой.',
+        ),
+      ];
 
-  final List<Client> _clients = <Client>[];
+  final List<Client> _clients;
 
-  Future<List<Client>> getAll({String? query}) async {
-    final normalizedQuery = (query ?? '').trim().toLowerCase();
-    if (normalizedQuery.isEmpty) {
-      return List<Client>.from(_clients);
+  List<Client> get clients => List<Client>.unmodifiable(_clients);
+
+  Future<List<Client>> listClients() async => List<Client>.unmodifiable(_clients);
+
+  Future<Client?> getClientById(String id) async {
+    final index = _clients.indexWhere((client) => client.id == id);
+    if (index == -1) {
+      return null;
     }
-
-    return _clients.where((client) {
-      final haystack = '${client.name} ${client.phone} ${client.email ?? ''}'.toLowerCase();
-      return haystack.contains(normalizedQuery);
-    }).toList();
+    return _clients[index];
   }
 
-  Future<Client?> getById(String id) async {
-    return _clients.where((client) => client.id == id).firstOrNull;
-  }
-
-  Future<String> create(Client client) async {
+  Future<void> createClient(Client client) async {
+    final exists = _clients.any((item) => item.id == client.id);
+    if (exists) {
+      throw StateError('Клиент с таким идентификатором уже существует.');
+    }
     _clients.add(client);
-    return client.id;
   }
 
-  Future<void> update(Client client) async {
+  Future<void> updateClient(Client client) async {
     final index = _clients.indexWhere((item) => item.id == client.id);
     if (index == -1) {
-      throw const AppException('Клиент не найден для обновления.', code: 'CLIENT_NOT_FOUND');
+      throw StateError('Клиент не найден для обновления.');
     }
     _clients[index] = client;
   }
 
-  Future<void> delete(String id) async {
+  Future<void> deleteClient(String id) async {
     _clients.removeWhere((client) => client.id == id);
   }
 }

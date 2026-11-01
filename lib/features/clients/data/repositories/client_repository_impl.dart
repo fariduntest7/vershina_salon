@@ -1,35 +1,69 @@
-/// Реализация репозитория клиентов.
+import 'package:vershina_salon/core/errors/app_exception.dart';
+import 'package:vershina_salon/features/clients/domain/entities/client.dart';
+
+/// Локальный источник данных клиентов.
 ///
-/// Слой данных инкапсулирует локальное хранилище и не позволяет UI напрямую
-/// работать с набором данных. Это важно для поддержки локальной базы и
-/// дальнейшего подключения MariaDB через другой источник данных.
-class ClientRepositoryImpl implements ClientRepository {
-  ClientRepositoryImpl(this._dataSource);
+/// В текущей версии реализация работает через in-memory список, поэтому
+/// приложение остаётся офлайн-совместимым и не требует внешней сети.
+/// Позже этот источник будет заменён на SQLite/IndexedDB-адаптер.
+class ClientLocalDataSource {
+  ClientLocalDataSource({List<Client> seedData = const <Client>[]})
+      : _clients = List<Client>.from(seedData);
 
-  final ClientLocalDataSource _dataSource;
+  final List<Client> _clients;
 
-  @override
   Future<List<Client>> getAll({String? query}) async {
-    return _dataSource.getAll(query: query);
+    final normalizedQuery = (query ?? '').trim().toLowerCase();
+    if (normalizedQuery.isEmpty) {
+      return List<Client>.from(_clients);
+    }
+
+    return _clients.where((client) {
+      final haystack = '${client.name} ${client.phone} ${client.email ?? ''}'.toLowerCase();
+      return haystack.contains(normalizedQuery);
+    }).toList();
   }
 
-  @override
   Future<Client?> getById(String id) async {
-    return _dataSource.getById(id);
+    final index = _clients.indexWhere((client) => client.id == id);
+    if (index == -1) {
+      return null;
+    }
+    return _clients[index];
   }
 
-  @override
   Future<String> create(Client client) async {
-    return _dataSource.create(client);
+    final exists = _clients.any((item) => item.id == client.id);
+    if (exists) {
+      throw const AppException(
+        'Клиент с таким идентификатором уже существует.',
+        code: 'CLIENT_ALREADY_EXISTS',
+      );
+    }
+
+    _clients.add(client);
+    return client.id;
   }
 
-  @override
   Future<void> update(Client client) async {
-    await _dataSource.update(client);
+    final index = _clients.indexWhere((item) => item.id == client.id);
+    if (index == -1) {
+      throw const AppException(
+        'Клиент не найден для обновления.',
+        code: 'CLIENT_NOT_FOUND',
+      );
+    }
+    _clients[index] = client;
   }
 
-  @override
   Future<void> delete(String id) async {
-    await _dataSource.delete(id);
+    final index = _clients.indexWhere((client) => client.id == id);
+    if (index == -1) {
+      throw const AppException(
+        'Клиент не найден для удаления.',
+        code: 'CLIENT_NOT_FOUND',
+      );
+    }
+    _clients.removeAt(index);
   }
 }

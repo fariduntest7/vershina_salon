@@ -1,64 +1,56 @@
-/// Модель клиента.
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uuid/uuid.dart';
+import 'package:vershina_salon/core/database/app_database.dart';
+import 'package:vershina_salon/features/clients/data/datasources/client_local_data_source.dart';
+import 'package:vershina_salon/features/clients/data/repositories/client_repository_impl.dart';
+import 'package:vershina_salon/features/clients/domain/entities/client.dart';
+import 'package:vershina_salon/features/clients/domain/repositories/client_repository.dart';
+
+final appDatabaseProvider = Provider<AppDatabase>((ref) => AppDatabase());
+
+final clientRepositoryProvider = Provider<ClientRepository>((ref) {
+  final database = ref.watch(appDatabaseProvider);
+  final dataSource = ClientLocalDataSource(seedData: database.clients);
+  return ClientRepositoryImpl(dataSource);
+});
+
+final clientListControllerProvider = StateNotifierProvider<ClientListController, List<Client>>((ref) {
+  final repository = ref.watch(clientRepositoryProvider);
+  return ClientListController(repository);
+});
+
+/// Контроллер списка клиентов.
 ///
-/// Представляет сущность клиента салона.
-/// Клиент может иметь личные данные, контактную информацию,
-/// историю визитов и комментарии.
-class Client {
-  const Client({
-    required this.id,
-    required this.name,
-    required this.phone,
-    required this.createdAt,
-    this.email,
-    this.birthDate,
-    this.photoUrl,
-    this.notes,
-    this.isActive = true,
-    this.totalSpend = 0,
-    this.lastVisitAt,
-    this.updatedAt,
-  });
+/// Отвечает за загрузку, добавление и обновление списка клиентов. Этот слой
+/// остаётся в presentation, но работает только через репозиторий, не напрямую с
+/// UI-компонентами.
+class ClientListController extends StateNotifier<List<Client>> {
+  ClientListController(this._repository) : super(const <Client>[]) {
+    load();
+  }
 
-  final String id;
-  final String name;
-  final String phone;
-  final String? email;
-  final DateTime? birthDate;
-  final String? photoUrl;
-  final String? notes;
-  final bool isActive;
-  final double totalSpend;
-  final DateTime? lastVisitAt;
-  final DateTime createdAt;
-  final DateTime? updatedAt;
+  final ClientRepository _repository;
 
-  Client copyWith({
-    String? id,
-    String? name,
-    String? phone,
+  Future<void> load() async {
+    final clients = await _repository.getAll();
+    state = clients;
+  }
+
+  Future<void> addClient({
+    required String name,
+    required String phone,
     String? email,
-    DateTime? birthDate,
-    String? photoUrl,
-    String? notes,
-    bool? isActive,
-    double? totalSpend,
-    DateTime? lastVisitAt,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) {
-    return Client(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      phone: phone ?? this.phone,
-      email: email ?? this.email,
-      birthDate: birthDate ?? this.birthDate,
-      photoUrl: photoUrl ?? this.photoUrl,
-      notes: notes ?? this.notes,
-      isActive: isActive ?? this.isActive,
-      totalSpend: totalSpend ?? this.totalSpend,
-      lastVisitAt: lastVisitAt ?? this.lastVisitAt,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
+  }) async {
+    final client = Client(
+      id: const Uuid().v4(),
+      name: name.trim(),
+      phone: phone.trim(),
+      email: email?.trim(),
+      createdAt: DateTime.now(),
+      totalSpend: 0,
     );
+
+    await _repository.create(client);
+    await load();
   }
 }
