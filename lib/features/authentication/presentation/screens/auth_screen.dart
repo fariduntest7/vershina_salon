@@ -75,7 +75,7 @@ class AuthScreen extends StatelessWidget {
               SizedBox(
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () => context.go('/dashboard'),
+                  onPressed: () => context.go('/home'),
                   child: const Text('Войти'),
                 ),
               ),

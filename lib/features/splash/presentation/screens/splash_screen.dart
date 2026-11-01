@@ -34,7 +34,9 @@ class _SplashScreenState extends State<SplashScreen> {
               decoration: BoxDecoration(
                 color: DesignTokens.goldPrimary.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: DesignTokens.goldPrimary.withOpacity(0.4)),
+                border: Border.all(
+                  color: DesignTokens.goldPrimary.withOpacity(0.4),
+                ),
               ),
               child: const Icon(
                 Icons.spa_rounded,

@@ -40,7 +40,7 @@ class SettingsScreen extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.go('/dashboard'),
+        onPressed: () => context.go('/home'),
         icon: const Icon(Icons.home_rounded),
         label: const Text('Главная'),
       ),

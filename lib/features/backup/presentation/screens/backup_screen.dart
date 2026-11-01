@@ -33,7 +33,7 @@ class BackupScreen extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () => context.go('/dashboard'),
+                onPressed: () => context.go('/home'),
                 child: const Text('Вернуться в панель'),
               ),
             ),

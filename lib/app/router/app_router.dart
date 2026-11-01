@@ -1,17 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:vershina_salon/features/appointments/presentation/screens/appointments_screen.dart';
-import 'package:vershina_salon/features/authentication/presentation/screens/auth_screen.dart';
-import 'package:vershina_salon/features/backup/presentation/screens/backup_screen.dart';
-import 'package:vershina_salon/features/calendar/presentation/screens/calendar_screen.dart';
-import 'package:vershina_salon/features/dashboard/presentation/screens/dashboard_screen.dart';
-import 'package:vershina_salon/features/finance/presentation/screens/finance_screen.dart';
-import 'package:vershina_salon/features/masters/presentation/screens/masters_screen.dart';
-import 'package:vershina_salon/features/onboarding/presentation/screens/onboarding_screen.dart';
-import 'package:vershina_salon/features/services/presentation/screens/services_screen.dart';
-import 'package:vershina_salon/features/settings/presentation/screens/settings_screen.dart';
-import 'package:vershina_salon/features/splash/presentation/screens/splash_screen.dart';
+import 'package:vershina_salon/app/theme/design_tokens.dart';
+import 'package:vershina_salon/features/navigation/presentation/screens/main_shell_screen.dart';
 
 class AppRouter {
   final GoRouter router = GoRouter(
@@ -28,6 +19,10 @@ class AppRouter {
       GoRoute(
         path: '/auth',
         builder: (context, state) => const AuthScreen(),
+      ),
+      GoRoute(
+        path: '/home',
+        builder: (context, state) => const MainShellScreen(),
       ),
       GoRoute(
         path: '/dashboard',
