@@ -47,27 +47,43 @@ class _MainShellScreenState extends State<MainShellScreen> {
         index: _currentIndex,
         children: _tabs.map((tab) => tab.screen).toList(),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          border: Border(
-            top: BorderSide(color: DesignTokens.border.withOpacity(0.5)),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+        child: Container(
+          decoration: BoxDecoration(
+            color: DesignTokens.secondaryBackground,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: DesignTokens.border.withOpacity(0.8)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.28),
+                blurRadius: 18,
+                offset: const Offset(0, 10),
+              ),
+            ],
           ),
-        ),
-        child: NavigationBar(
-          backgroundColor: DesignTokens.secondaryBackground,
-          selectedIndex: _currentIndex,
-          onDestinationSelected: (index) {
-            setState(() => _currentIndex = index);
-          },
-          destinations: _tabs
-              .map(
-                (tab) => NavigationDestination(
-                  label: tab.label,
-                  icon: Icon(tab.icon),
-                  selectedIcon: Icon(tab.icon, color: DesignTokens.goldPrimary),
-                ),
-              )
-              .toList(),
+          child: NavigationBar(
+            height: 76,
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            selectedIndex: _currentIndex,
+            onDestinationSelected: (index) {
+              setState(() => _currentIndex = index);
+            },
+            destinations: _tabs
+                .map(
+                  (tab) => NavigationDestination(
+                    label: tab.label,
+                    icon: Icon(tab.icon),
+                    selectedIcon: Icon(
+                      tab.icon,
+                      color: DesignTokens.goldPrimary,
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
         ),
       ),
     );
