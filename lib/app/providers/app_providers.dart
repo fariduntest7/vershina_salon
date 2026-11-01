@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
+
 import 'package:vershina_salon/core/database/app_database.dart';
 import 'package:vershina_salon/features/clients/data/datasources/client_local_data_source.dart';
 import 'package:vershina_salon/features/clients/data/repositories/client_repository_impl.dart';
@@ -18,16 +19,16 @@ final clientRepositoryProvider = Provider<ClientRepository>((ref) {
 });
 
 /// Поставщик списка клиентов для UI.
-final clientListControllerProvider = StateNotifierProvider<ClientListController, List<Client>>((ref) {
+final clientListControllerProvider =
+    StateNotifierProvider<ClientListController, List<Client>>((ref) {
   final repository = ref.watch(clientRepositoryProvider);
   return ClientListController(repository);
 });
 
 /// Контроллер списка клиентов.
 ///
-/// Этот виджет-состояние отвечает за обновление списка в UI после операций
-/// создания, изменения или удаления клиентов. Все изменения проходят через
-/// репозиторий, что делает слой устойчивым к изменениям хранилища.
+/// Этот слой отвечает за загрузку, создание и обновление списка клиентов.
+/// Все операции проходят через репозиторий для сохранения архитектуры.
 class ClientListController extends StateNotifier<List<Client>> {
   ClientListController(this._repository) : super(const <Client>[]) {
     load();
@@ -47,6 +48,7 @@ class ClientListController extends StateNotifier<List<Client>> {
   }) async {
     final normalizedName = name.trim();
     final normalizedPhone = phone.trim();
+
     if (normalizedName.isEmpty) {
       throw ArgumentError('Имя клиента обязательно для заполнения.');
     }
@@ -68,7 +70,7 @@ class ClientListController extends StateNotifier<List<Client>> {
   }
 }
 
-/// Утилитарный виджет для отображения статуса пустого списка.
+/// Общий пустой статус для экранов списка.
 class EmptyState extends StatelessWidget {
   const EmptyState({
     required this.title,
