@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:vershina_salon/app/theme/design_tokens.dart';
-
 class DesignTokens {
   const DesignTokens._();
 
