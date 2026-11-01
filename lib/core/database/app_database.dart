@@ -1,52 +1,48 @@
 import 'package:vershina_salon/features/clients/domain/entities/client.dart';
 
-/// Реализация локального хранилища приложения.
+/// Хранилище данных приложения в памяти.
 ///
-/// Данный слой является первым рабочим вариантом локального Storage. В текущей
-/// версии данные хранятся в памяти и доступны без интернета. В дальнейшем этот
-/// сервис будет заменён на Drift/SQLite и IndexedDB для каждой платформы.
+/// Данный класс предоставляет офлайн-работу без сетевого подключения и
+/// используется как временный слой до перехода на Drift/SQLite и IndexedDB.
 class AppDatabase {
-  AppDatabase() : _clients = <Client>[...
-    Client(
-      id: 'seed-client-1',
-      name: 'Анна Петрова',
-      phone: '+992900000001',
-      email: 'anna@example.com',
-      totalSpend: 18500,
-      lastVisitAt: DateTime.now().subtract(const Duration(days: 2)),
-      createdAt: DateTime.now().subtract(const Duration(days: 30)),
-      birthDate: DateTime(1992, 5, 11),
-      notes: 'Предпочитает безупречный уход и регулярные записи.',
-    ),
-    Client(
-      id: 'seed-client-2',
-      name: 'Рустам Сардаров',
-      phone: '+992900000002',
-      email: 'rustam@example.com',
-      totalSpend: 9300,
-      lastVisitAt: DateTime.now().subtract(const Duration(days: 5)),
-      createdAt: DateTime.now().subtract(const Duration(days: 18)),
-      birthDate: DateTime(1988, 9, 21),
-      notes: 'Часто выбирает услуги стрижки и уход за бородой.',
-    ),
-  ];
+  AppDatabase()
+      : _clients = <Client>[
+          Client(
+            id: 'seed-client-1',
+            name: 'Анна Петрова',
+            phone: '+992900000001',
+            email: 'anna@example.com',
+            totalSpend: 18500,
+            lastVisitAt: DateTime.now().subtract(const Duration(days: 2)),
+            createdAt: DateTime.now().subtract(const Duration(days: 30)),
+            birthDate: DateTime(1992, 5, 11),
+            notes: 'Предпочитает безупречный уход и регулярные записи.',
+          ),
+          Client(
+            id: 'seed-client-2',
+            name: 'Рустам Сардаров',
+            phone: '+992900000002',
+            email: 'rustam@example.com',
+            totalSpend: 9300,
+            lastVisitAt: DateTime.now().subtract(const Duration(days: 5)),
+            createdAt: DateTime.now().subtract(const Duration(days: 18)),
+            birthDate: DateTime(1988, 9, 21),
+            notes: 'Часто выбирает услуги стрижки и уход за бородой.',
+          ),
+        ];
 
   final List<Client> _clients;
 
-  Future<List<Client>> listClients() async {
-    return List<Client>.unmodifiable(_clients);
-  }
+  List<Client> get clients => List<Client>.unmodifiable(_clients);
+
+  Future<List<Client>> listClients() async => List<Client>.unmodifiable(_clients);
 
   Future<Client?> getClientById(String id) async {
-    return _clients.firstWhere(
-      (client) => client.id == id,
-      orElse: () => const Client(
-        id: '',
-        name: '',
-        phone: '',
-        createdAt: null,
-      ),
-    );
+    final index = _clients.indexWhere((client) => client.id == id);
+    if (index == -1) {
+      return null;
+    }
+    return _clients[index];
   }
 
   Future<void> createClient(Client client) async {
