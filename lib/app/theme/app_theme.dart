@@ -21,6 +21,28 @@ class AppTheme {
         backgroundColor: Color(0xFF121216),
         foregroundColor: Color(0xFFF5F2EC),
         elevation: 0,
+        surfaceTintColor: Colors.transparent,
+      ),
+      navigationBarTheme: const NavigationBarThemeData(
+        backgroundColor: Color(0xFF121216),
+        indicatorColor: Color(0xFFD6B56D),
+        labelTextStyle: WidgetStatePropertyAll(
+          TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      cardTheme: CardTheme(
+        color: const Color(0xFF19191F),
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: Color(0xFFD6B56D),
+        foregroundColor: Color(0xFF121216),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -53,6 +75,11 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: const Color(0xFFD6B56D),
         ),
       ),
     );
