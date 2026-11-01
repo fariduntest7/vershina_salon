@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vershina_salon/app/theme/design_tokens.dart';
-import 'package:vershina_salon/app/providers/app_providers.dart';
-import 'package:vershina_salon/features/clients/domain/entities/client.dart';
 
+import 'package:vershina_salon/app/providers/app_providers.dart';
+import 'package:vershina_salon/app/theme/design_tokens.dart';
+
+/// Экран списка клиентов.
+///
+/// В этом экране пользователь может видеть актуальный список клиентов,
+/// производить поиск и быстро добавлять новых участников.
 class ClientsScreen extends ConsumerWidget {
   const ClientsScreen({super.key});
 
@@ -12,33 +16,40 @@ class ClientsScreen extends ConsumerWidget {
     final clients = ref.watch(clientListControllerProvider);
 
     return Scaffold(
+      backgroundColor: DesignTokens.primaryBackground,
       appBar: AppBar(
-        title: const Text('Клиенты'),
         backgroundColor: DesignTokens.secondaryBackground,
+        title: const Text('Клиенты'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Поиск клиента',
-                prefixIcon: Icon(Icons.search_rounded),
+        child: clients.isEmpty
+            ? const EmptyState(
+                title: 'Нет клиентов',
+                message: 'Добавьте нового клиента, чтобы начать работу.',
+                icon: Icons.people_alt_rounded,
+              )
+            : Column(
+                children: [
+                  TextField(
+                    decoration: const InputDecoration(
+                      hintText: 'Поиск клиента',
+                      prefixIcon: Icon(Icons.search_rounded),
+                    ),
+                    onChanged: (_) {},
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: clients.length,
+                      itemBuilder: (context, index) {
+                        final client = clients[index];
+                        return _ClientTile(client: client);
+                      },
+                    ),
+                  ),
+                ],
               ),
-              onChanged: (_) {},
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: ListView.builder(
-                itemCount: clients.length,
-                itemBuilder: (context, index) {
-                  final client = clients[index];
-                  return _ClientTile(client: client);
-                },
-              ),
-            ),
-          ],
-        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
@@ -48,7 +59,7 @@ class ClientsScreen extends ConsumerWidget {
             email: 'new.client@example.com',
           );
         },
-        icon: const Icon(Icons.person_add_rounded),
+        icon: const Icon(Icons.person_add_alt_1_rounded),
         label: const Text('Добавить'),
       ),
     );
@@ -58,7 +69,7 @@ class ClientsScreen extends ConsumerWidget {
 class _ClientTile extends StatelessWidget {
   const _ClientTile({required this.client});
 
-  final Client client;
+  final dynamic client;
 
   @override
   Widget build(BuildContext context) {

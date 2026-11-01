@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:vershina_salon/app/providers/app_providers.dart';
 import 'package:vershina_salon/app/theme/design_tokens.dart';
 
-/// Главный экран панели управления.
+/// Экран панели управления.
 ///
-/// Показывает статистику по доходам, клиентам и записям. Данные вычисляются из
-/// реального списка клиентов, который поддерживается локальным репозиторием.
+/// Основная статистика приложения формируется из данных о клиентах и записей.
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
@@ -16,9 +16,10 @@ class DashboardScreen extends ConsumerWidget {
     final totalIncome = clients.fold<double>(0, (sum, client) => sum + client.totalSpend);
 
     return Scaffold(
+      backgroundColor: DesignTokens.primaryBackground,
       appBar: AppBar(
-        title: const Text('Dashboard'),
         backgroundColor: DesignTokens.secondaryBackground,
+        title: const Text('Dashboard'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -36,7 +37,7 @@ class DashboardScreen extends ConsumerWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _MetricCard(
-                    title: 'Клиентов',
+                    title: 'Клиенты',
                     value: '${clients.length}',
                     icon: Icons.people_alt_rounded,
                   ),
@@ -48,7 +49,7 @@ class DashboardScreen extends ConsumerWidget {
               children: [
                 Expanded(
                   child: _MetricCard(
-                    title: 'Записей',
+                    title: 'Записи',
                     value: '18',
                     icon: Icons.event_note_rounded,
                   ),
@@ -156,19 +157,14 @@ class _MetricCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: DesignTokens.goldPrimary.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, color: DesignTokens.goldPrimary, size: 18),
-              ),
-              const Spacer(),
-            ],
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: DesignTokens.goldPrimary.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: DesignTokens.goldPrimary, size: 18),
           ),
           const SizedBox(height: 12),
           Text(
