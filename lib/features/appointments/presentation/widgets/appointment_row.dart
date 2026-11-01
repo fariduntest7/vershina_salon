@@ -20,20 +20,35 @@ class AppointmentRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isConfirmed = status.toLowerCase().contains('подт') ||
+        status.toLowerCase().contains('confirm');
+    final statusColor = isConfirmed ? DesignTokens.success : DesignTokens.warning;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: DesignTokens.cardBackground,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: DesignTokens.border),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 20,
-            backgroundColor: DesignTokens.goldPrimary.withOpacity(0.18),
+          Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: DesignTokens.goldPrimary.withOpacity(0.14),
+              borderRadius: BorderRadius.circular(14),
+            ),
             child: const Icon(
-              Icons.person_rounded,
+              Icons.schedule_rounded,
               color: DesignTokens.goldPrimary,
             ),
           ),
@@ -46,7 +61,8 @@ class AppointmentRow extends StatelessWidget {
                   client,
                   style: const TextStyle(
                     color: DesignTokens.primaryText,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -67,22 +83,24 @@ class AppointmentRow extends StatelessWidget {
                 time,
                 style: const TextStyle(
                   color: DesignTokens.goldPrimary,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 6),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: DesignTokens.success.withOpacity(0.12),
+                  color: statusColor.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(999),
+                  border: Border.all(color: statusColor.withOpacity(0.3)),
                 ),
                 child: Text(
                   status,
-                  style: const TextStyle(
-                    color: DesignTokens.success,
+                  style: TextStyle(
+                    color: statusColor,
                     fontSize: 10,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
