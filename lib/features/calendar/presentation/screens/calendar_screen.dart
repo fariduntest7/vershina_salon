@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:vershina_salon/app/theme/design_tokens.dart';
+import 'package:vershina_salon/features/appointments/presentation/widgets/appointment_row.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -220,66 +221,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 separatorBuilder: (_, __) => const SizedBox(height: 10),
                 itemBuilder: (context, index) {
                   final appointment = selectedAppointments[index];
-                  return Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: DesignTokens.cardBackground,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: DesignTokens.border),
-                    ),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 20,
-                          backgroundColor: DesignTokens.goldPrimary.withOpacity(0.18),
-                          child: const Icon(
-                            Icons.person_rounded,
-                            color: DesignTokens.goldPrimary,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                appointment['client'] ?? '',
-                                style: const TextStyle(
-                                  color: DesignTokens.primaryText,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '${appointment['service']} · ${appointment['master']}',
-                                style: const TextStyle(
-                                  color: DesignTokens.secondaryText,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              appointment['time'] ?? '',
-                              style: const TextStyle(
-                                color: DesignTokens.goldPrimary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            const Icon(
-                              Icons.check_circle_rounded,
-                              color: DesignTokens.success,
-                              size: 18,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                  return AppointmentRow(
+                    time: appointment['time'] ?? '',
+                    client: appointment['client'] ?? '',
+                    service: appointment['service'] ?? '',
+                    master: appointment['master'] ?? '',
+                    status: 'Подтверждена',
                   );
                 },
               ),
