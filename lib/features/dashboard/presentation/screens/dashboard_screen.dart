@@ -7,11 +7,6 @@ import 'package:vershina_salon/features/appointments/providers/appointment_provi
 import 'package:vershina_salon/features/masters/providers/master_providers.dart';
 import 'package:vershina_salon/features/services/providers/service_providers.dart';
 
-/// Экран панели управления.
-///
-/// Основная статистика приложения формируется из данных о клиентах,
-/// мастерах, услугах и записях. Это позволяет панели оставаться живой и
-/// отражать текущее состояние салона без ручного обновления статических значений.
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
@@ -22,10 +17,7 @@ class DashboardScreen extends ConsumerWidget {
     final masters = ref.watch(masterListControllerProvider);
     final services = ref.watch(serviceListControllerProvider);
 
-    final totalIncome = appointments.fold<double>(
-      0,
-      (sum, item) => sum + item.amount,
-    );
+    final totalIncome = appointments.fold<double>(0, (sum, item) => sum + item.amount);
     final today = DateTime.now();
     final todayAppointments = appointments.where((item) {
       return item.startsAt.year == today.year &&
@@ -52,6 +44,72 @@ class DashboardScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: DesignTokens.cardBackground,
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: DesignTokens.border),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 16,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Сегодня',
+                          style: TextStyle(
+                            color: DesignTokens.secondaryText,
+                            fontSize: 12,
+                            letterSpacing: 0.4,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '$todayAppointments записей',
+                          style: const TextStyle(
+                            color: DesignTokens.primaryText,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          '${services.length} услуг · ${masters.length} мастеров',
+                          style: const TextStyle(
+                            color: DesignTokens.secondaryText,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: DesignTokens.goldPrimary.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(
+                      Icons.today_rounded,
+                      color: DesignTokens.goldPrimary,
+                      size: 26,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
@@ -95,64 +153,6 @@ class DashboardScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: DesignTokens.cardBackground,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: DesignTokens.border),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 46,
-                    height: 46,
-                    decoration: BoxDecoration(
-                      color: DesignTokens.goldPrimary.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: const Icon(
-                      Icons.today_rounded,
-                      color: DesignTokens.goldPrimary,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Сегодня',
-                          style: TextStyle(
-                            color: DesignTokens.secondaryText,
-                            fontSize: 12,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '$todayAppointments записей · ${services.length} услуг',
-                          style: const TextStyle(
-                            color: DesignTokens.primaryText,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Text(
-                    '${averageMasterRating.toStringAsFixed(1)} ★',
-                    style: const TextStyle(
-                      color: DesignTokens.goldPrimary,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-            ),
             const SizedBox(height: 20),
             Align(
               alignment: Alignment.centerLeft,
@@ -160,7 +160,7 @@ class DashboardScreen extends ConsumerWidget {
                 'Последние клиенты',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: DesignTokens.primaryText,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
@@ -175,16 +175,18 @@ class DashboardScreen extends ConsumerWidget {
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       color: DesignTokens.cardBackground,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(18),
                       border: Border.all(color: DesignTokens.border),
                     ),
                     child: Row(
                       children: [
                         CircleAvatar(
+                          radius: 18,
                           backgroundColor: DesignTokens.goldPrimary.withOpacity(0.14),
                           child: const Icon(
                             Icons.person_rounded,
                             color: DesignTokens.goldPrimary,
+                            size: 20,
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -196,12 +198,16 @@ class DashboardScreen extends ConsumerWidget {
                                 client.name,
                                 style: const TextStyle(
                                   color: DesignTokens.primaryText,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
+                              const SizedBox(height: 2),
                               Text(
                                 client.phone,
-                                style: const TextStyle(color: DesignTokens.secondaryText),
+                                style: const TextStyle(
+                                  color: DesignTokens.secondaryText,
+                                  fontSize: 12,
+                                ),
                               ),
                             ],
                           ),
@@ -210,7 +216,7 @@ class DashboardScreen extends ConsumerWidget {
                           '${client.totalSpend.toStringAsFixed(0)} TJS',
                           style: const TextStyle(
                             color: DesignTokens.goldPrimary,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ],
@@ -248,33 +254,39 @@ class _MetricCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: DesignTokens.border),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
           Container(
-            width: 32,
-            height: 32,
+            width: 36,
+            height: 36,
             decoration: BoxDecoration(
               color: accent.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: accent, size: 18),
           ),
-          const SizedBox(height: 12),
-          Text(
-            title,
-            style: const TextStyle(
-              color: DesignTokens.secondaryText,
-              fontSize: 12,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            value,
-            style: const TextStyle(
-              color: DesignTokens.primaryText,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: DesignTokens.secondaryText,
+                    fontSize: 12,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    color: DesignTokens.primaryText,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
